@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --color-studio-light: #FAFAF9;     /* ivory/alabaster */
+  --color-studio-sand: #F5F5F4;      /* warm sand */
+  --color-studio-clay: #E7E5E4;      /* darker sand/clay */
+  --color-studio-dark: #1C1917;      /* charcoal */
+  --color-studio-accent: #C5A880;    /* muted gold/brass */
+  --color-studio-accent-dark: #A38A63; /* darker gold hover */
+  
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+@utility transition-luxury {
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@utility gold-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(197, 168, 128, 0) 0%, rgba(197, 168, 128, 0.8) 50%, rgba(197, 168, 128, 0) 100%);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-studio-light);
+    color: var(--color-studio-dark);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background-color: var(--color-studio-light);
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(197, 168, 128, 0.45);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(197, 168, 128, 0.7);
+}
+
+/* Swiper pagination bullet customizations */
+.swiper-pagination-bullet-active {
+  background: #C5A880 !important;
+}
+
+.swiper-button-next, .swiper-button-prev {
+  color: #C5A880 !important;
+}
+
+
