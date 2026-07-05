@@ -91,6 +91,7 @@ export default function PortfolioSingle() {
   const [project, setProject] = useState(null);
   const [nextProject, setNextProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lightboxImage, setLightboxImage] = useState(null);
 
   useEffect(() => {
     async function loadProjectData() {
@@ -242,29 +243,39 @@ export default function PortfolioSingle() {
         );
       })()}
 
-      {/* Swiper Gallery Carousel */}
+      {/* Premium Gallery Grid (5 columns per row on desktop) */}
       {project.gallery && project.gallery.length > 0 && (
-        <section className="bg-stone-950 py-8">
+        <section className="bg-stone-950 py-16">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
-            <Swiper
-              modules={[Navigation, Pagination, Autoplay]}
-              spaceBetween={20}
-              slidesPerView={1}
-              navigation={true}
-              pagination={{ clickable: true }}
-              autoplay={{ delay: 5000, disableOnInteraction: false }}
-              className="aspect-[21/9] w-full shadow-2xl bg-stone-900 overflow-hidden"
-            >
+            <div className="text-center mb-10">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-studio-accent block mb-2">Gallery</span>
+              <h2 className="text-2xl md:text-3xl font-serif text-white font-light uppercase tracking-wider">
+                Project Gallery
+              </h2>
+              <div className="w-12 h-[1px] bg-studio-accent/50 mx-auto mt-4"></div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
               {project.gallery.map((imgUrl, index) => (
-                <SwiperSlide key={index} className="w-full h-full relative">
+                <div
+                  key={index}
+                  className="overflow-hidden bg-stone-900 border border-stone-850 shadow-lg aspect-square relative group cursor-pointer"
+                  onClick={() => setLightboxImage(imgUrl)}
+                >
                   <img
                     src={imgUrl}
                     alt={`${project.title} detail ${index + 1}`}
-                    className="object-cover w-full h-full brightness-95"
+                    className="object-cover w-full h-full transform scale-100 group-hover:scale-105 transition-all duration-500 brightness-90 group-hover:brightness-100"
                   />
-                </SwiperSlide>
+                  {/* Subtle Elegant Hover Overlay */}
+                  <div className="absolute inset-0 bg-stone-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-white text-[9px] uppercase tracking-widest border border-white/30 px-3 py-1.5 backdrop-blur-sm">
+                      Enlarge
+                    </span>
+                  </div>
+                </div>
               ))}
-            </Swiper>
+            </div>
           </div>
         </section>
       )}
@@ -377,6 +388,27 @@ export default function PortfolioSingle() {
           </Link>
         </div>
       </section>
+
+      {/* Premium Lightbox Modal */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 bg-stone-950/95 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
+          onClick={() => setLightboxImage(null)}
+        >
+          <button
+            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors p-2 text-xs tracking-widest font-sans uppercase focus:outline-none"
+            onClick={() => setLightboxImage(null)}
+          >
+            ✕ Close
+          </button>
+          
+          <img
+            src={lightboxImage}
+            alt="Enlarged gallery item"
+            className="max-w-full max-h-[85vh] object-contain shadow-2xl border border-stone-800"
+          />
+        </div>
+      )}
     </div>
   );
 }
