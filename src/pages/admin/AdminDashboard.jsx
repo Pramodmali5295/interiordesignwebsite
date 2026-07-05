@@ -215,11 +215,12 @@ export default function AdminDashboard() {
       if (activeTab === "projects") {
         const parsedGallery = formData.gallery
           ? formData.gallery.split(",").map((s) => s.trim()).filter((s) => s.length > 0)
-          : [formData.image];
+          : [];
 
         const projectPayload = {
           ...formData,
           gallery: parsedGallery,
+          image: parsedGallery[0] || "",
         };
 
         if (showModal === "add") {
@@ -1210,18 +1211,8 @@ export default function AdminDashboard() {
                     ></textarea>
                   </div>
                   <div>
-                    <label className="block text-[10px] tracking-wider uppercase text-stone-500 mb-2">Cover Image URL</label>
-                    <input
-                      type="url"
-                      value={formData.image || ""}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                      className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent font-mono text-xs"
-                      required
-                    />
-                  </div>
-                  <div>
                     <label className="block text-[10px] tracking-wider uppercase text-stone-500 mb-2">
-                      Gallery Images (comma separated list of URLs)
+                      Gallery Images (comma separated list of URLs. First URL will be automatically used as the Cover Image)
                     </label>
                     <textarea
                       value={formData.gallery || ""}
@@ -1229,6 +1220,7 @@ export default function AdminDashboard() {
                       rows="2"
                       placeholder="https://image1.com, https://image2.com"
                       className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent font-mono text-xs"
+                      required
                     ></textarea>
                   </div>
                   <div>
