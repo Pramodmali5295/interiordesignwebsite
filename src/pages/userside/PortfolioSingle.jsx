@@ -41,6 +41,20 @@ const getProjectImage = (project) => {
   }
   return "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80";
 };
+
+// Helper to determine cover image for gallery items with fallback for video links in the gallery
+const getGalleryItemThumbnail = (url) => {
+  if (!url) return "";
+  if (isVideoUrl(url)) {
+    const ytMatch = url.trim().match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+    if (ytMatch && ytMatch[1]) {
+      return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+    }
+    return "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80";
+  }
+  return url;
+};
+
 import { fetchProjectBySlug, fetchProjects } from "../../services/portfolioService";
 
 // Import Swiper styles
@@ -256,25 +270,37 @@ export default function PortfolioSingle() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-              {project.gallery.map((imgUrl, index) => (
-                <div
-                  key={index}
-                  className="overflow-hidden bg-stone-900 border border-stone-850 shadow-lg aspect-square relative group cursor-pointer"
-                  onClick={() => setLightboxImage(imgUrl)}
-                >
-                  <img
-                    src={imgUrl}
-                    alt={`${project.title} detail ${index + 1}`}
-                    className="object-cover w-full h-full transform scale-100 group-hover:scale-105 transition-all duration-500 brightness-90 group-hover:brightness-100"
-                  />
-                  {/* Subtle Elegant Hover Overlay */}
-                  <div className="absolute inset-0 bg-stone-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <span className="text-white text-[9px] uppercase tracking-widest border border-white/30 px-3 py-1.5 backdrop-blur-sm">
-                      Enlarge
-                    </span>
+              {project.gallery.map((itemUrl, index) => {
+                const isVid = isVideoUrl(itemUrl);
+                const thumb = getGalleryItemThumbnail(itemUrl);
+                return (
+                  <div
+                    key={index}
+                    className="overflow-hidden bg-stone-900 border border-stone-850 shadow-lg aspect-square relative group cursor-pointer"
+                    onClick={() => setLightboxImage(itemUrl)}
+                  >
+                    <img
+                      src={thumb}
+                      alt={`${project.title} detail ${index + 1}`}
+                      className="object-cover w-full h-full transform scale-100 group-hover:scale-105 transition-all duration-500 brightness-90 group-hover:brightness-100"
+                    />
+                    
+                    {/* Play Badge overlay for videos in the gallery grid */}
+                    {isVid && (
+                      <div className="absolute top-3 right-3 bg-stone-950/85 backdrop-blur-md text-studio-accent p-2 rounded-full border border-studio-accent/20 z-10 shadow-md">
+                        <Play size={10} className="fill-studio-accent" />
+                      </div>
+                    )}
+                    
+                    {/* Subtle Elegant Hover Overlay */}
+                    <div className="absolute inset-0 bg-stone-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <span className="text-white text-[9px] uppercase tracking-widest border border-white/30 px-3 py-1.5 backdrop-blur-sm">
+                        {isVid ? "Play Video" : "Enlarge"}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -390,25 +416,69 @@ export default function PortfolioSingle() {
       </section>
 
       {/* Premium Lightbox Modal */}
-      {lightboxImage && (
-        <div
-          className="fixed inset-0 bg-stone-950/95 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
-          onClick={() => setLightboxImage(null)}
-        >
-          <button
-            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors p-2 text-xs tracking-widest font-sans uppercase focus:outline-none"
+      {lightboxImage && (() => {
+        const isVid = isVideoUrl(lightboxImage);
+        const videoData = isVid ? getVideoEmbed(lightboxImage) : null;
+        return (
+          <div
+            className="fixed inset-0 bg-stone-950/95 backdrop-blur-md z-[9999] flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
             onClick={() => setLightboxImage(null)}
           >
-            ✕ Close
-          </button>
-          
-          <img
-            src={lightboxImage}
-            alt="Enlarged gallery item"
-            className="max-w-full max-h-[85vh] object-contain shadow-2xl border border-stone-800"
-          />
-        </div>
-      )}
+            <button
+              className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors p-2 text-xs tracking-widest font-sans uppercase focus:outline-none z-20"
+              onClick={() => setLightboxImage(null)}
+            >
+              ✕ Close
+            </button>
+            
+            <div 
+              className="relative max-w-5xl w-full max-h-[85vh] flex items-center justify-center z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {isVid && videoData ? (
+                <div className={`relative w-full shadow-2xl bg-stone-900 border border-stone-800 overflow-hidden ${
+                  videoData.type === "instagram" ? "max-w-md mx-auto aspect-[9/16]" : "aspect-video"
+                }`}>
+                  {videoData.type === "youtube" && (
+                    <iframe
+                      src={videoData.embedUrl}
+                      title="YouTube video player"
+                      className="absolute inset-0 w-full h-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    ></iframe>
+                  )}
+                  {videoData.type === "instagram" && (
+                    <iframe
+                      src={videoData.embedUrl}
+                      title="Instagram post embed"
+                      className="absolute inset-0 w-full h-full border-0"
+                      allowTransparency="true"
+                      allow="encrypted-media"
+                      scrolling="no"
+                      frameBorder="0"
+                    ></iframe>
+                  )}
+                  {videoData.type === "direct" && (
+                    <video
+                      src={videoData.embedUrl}
+                      controls
+                      autoPlay
+                      className="absolute inset-0 w-full h-full object-cover"
+                    ></video>
+                  )}
+                </div>
+              ) : (
+                <img
+                  src={lightboxImage}
+                  alt="Enlarged gallery item"
+                  className="max-w-full max-h-[85vh] object-contain shadow-2xl border border-stone-800"
+                />
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
