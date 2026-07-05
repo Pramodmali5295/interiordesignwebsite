@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Mail } from "lucide-react";
-import { fetchContactSettings } from "../../services/contactService";
+import { fetchContactSettings } from "../services/contactService";
 
 // Custom premium social SVGs to bypass package resolution issues
 export const Instagram = (props) => (
