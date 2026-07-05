@@ -50,10 +50,12 @@ export async function fetchProjectBySlug(slug) {
 export async function addProject(projectData) {
   const projectsCol = collection(db, "projects");
   const docRef = doc(projectsCol);
+  const title = projectData.title || "Untitled Project";
   const newProject = { 
-    ...projectData, 
+    ...projectData,
+    title,
     id: docRef.id,
-    slug: projectData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")
+    slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")
   };
   await setDoc(docRef, newProject);
   return newProject;
@@ -64,9 +66,11 @@ export async function addProject(projectData) {
  */
 export async function updateProject(id, projectData) {
   const docRef = doc(db, "projects", id);
+  const title = projectData.title || "Untitled Project";
   const updatedData = {
     ...projectData,
-    slug: projectData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")
+    title,
+    slug: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")
   };
   await setDoc(docRef, updatedData, { merge: true });
   return updatedData;

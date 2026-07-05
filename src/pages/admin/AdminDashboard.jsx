@@ -1131,7 +1131,6 @@ export default function AdminDashboard() {
                         value={formData.title || ""}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent"
-                        required
                       />
                     </div>
                     <div>
@@ -1155,7 +1154,6 @@ export default function AdminDashboard() {
                         value={formData.client || ""}
                         onChange={(e) => setFormData({ ...formData, client: e.target.value })}
                         className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent"
-                        required
                       />
                     </div>
                     <div>
@@ -1165,7 +1163,6 @@ export default function AdminDashboard() {
                         value={formData.location || ""}
                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                         className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent"
-                        required
                       />
                     </div>
                     <div>
@@ -1175,7 +1172,6 @@ export default function AdminDashboard() {
                         value={formData.year || ""}
                         onChange={(e) => setFormData({ ...formData, year: e.target.value })}
                         className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent"
-                        required
                       />
                     </div>
                   </div>
@@ -1187,7 +1183,6 @@ export default function AdminDashboard() {
                       onChange={(e) => setFormData({ ...formData, scope: e.target.value })}
                       placeholder="e.g. Full-scale interior architecture, bespoke curation"
                       className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent"
-                      required
                     />
                   </div>
                   <div>
@@ -1197,7 +1192,6 @@ export default function AdminDashboard() {
                       value={formData.shortDesc || ""}
                       onChange={(e) => setFormData({ ...formData, shortDesc: e.target.value })}
                       className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent"
-                      required
                     />
                   </div>
                   <div>
@@ -1207,7 +1201,6 @@ export default function AdminDashboard() {
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       rows="4"
                       className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent"
-                      required
                     ></textarea>
                   </div>
                   <div>
@@ -1220,7 +1213,6 @@ export default function AdminDashboard() {
                       rows="2"
                       placeholder="https://image1.com, https://image2.com"
                       className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent font-mono text-xs"
-                      required
                     ></textarea>
                   </div>
                   <div>
