@@ -1,9 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
-import { ArrowRight, Compass, Home as HomeIcon, Briefcase, LayoutGrid, Hammer, Layers } from "lucide-react";
+import { ArrowRight, Compass, Home as HomeIcon, Briefcase, LayoutGrid, Hammer, Layers, Play } from "lucide-react";
 import { fetchProjects } from "../../services/portfolioService";
 import { fetchServices } from "../../services/serviceService";
+
+// Helper to determine cover image with fallback for video projects
+const getProjectImage = (project) => {
+  if (project.image) return project.image;
+  if (project.videoUrl) {
+    const ytMatch = project.videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+    if (ytMatch && ytMatch[1]) {
+      return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+    }
+  }
+  return "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80";
+};
 
 export default function Home() {
   const heroTitleRef = useRef(null);
@@ -350,10 +362,17 @@ export default function Home() {
                   {/* Image Frame */}
                   <div className="relative aspect-[3/2] overflow-hidden bg-stone-900">
                     <img
-                      src={project.image}
+                      src={getProjectImage(project)}
                       alt={project.title}
                       className="object-cover w-full h-full transform group-hover:scale-105 transition-luxury duration-700 brightness-[0.95]"
                     />
+                    
+                    {/* Video Play Indicator Badge */}
+                    {project.videoUrl && (
+                      <div className="absolute top-4 right-4 bg-stone-950/85 backdrop-blur-md text-studio-accent p-2.5 rounded-full border border-studio-accent/20 z-10 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                        <Play size={12} className="fill-studio-accent" />
+                      </div>
+                    )}
                     {/* Subtle hover overlay */}
                     <div className="absolute inset-0 bg-stone-950/20 group-hover:bg-stone-950/45 transition-colors duration-500 flex items-center justify-center opacity-0 group-hover:opacity-100">
                       <span className="text-white text-xs tracking-widest uppercase border border-white/50 px-6 py-2 backdrop-blur-sm">

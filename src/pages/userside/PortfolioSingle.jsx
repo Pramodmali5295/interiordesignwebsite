@@ -1,8 +1,20 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Calendar, MapPin, Tag, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calendar, MapPin, Tag, User, Play } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+
+// Helper to determine cover image with fallback for video projects
+const getProjectImage = (project) => {
+  if (project.image) return project.image;
+  if (project.videoUrl) {
+    const ytMatch = project.videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+    if (ytMatch && ytMatch[1]) {
+      return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+    }
+  }
+  return "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80";
+};
 import { fetchProjectBySlug, fetchProjects } from "../../services/portfolioService";
 
 // Import Swiper styles
@@ -136,7 +148,7 @@ export default function PortfolioSingle() {
       <section className="bg-stone-950 pt-36 pb-24 md:pt-44 md:pb-32 text-white relative overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{ backgroundImage: `url('${project.image}')` }}
+          style={{ backgroundImage: `url('${getProjectImage(project)}')` }}
         ></div>
         <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center md:items-start text-center md:text-left">
           <Link

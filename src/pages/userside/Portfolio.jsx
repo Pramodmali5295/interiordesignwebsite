@@ -1,6 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Play } from "lucide-react";
 import { fetchProjects } from "../../services/portfolioService";
+
+// Helper to determine cover image with fallback for video projects
+const getProjectImage = (project) => {
+  if (project.image) return project.image;
+  if (project.videoUrl) {
+    const ytMatch = project.videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+    if (ytMatch && ytMatch[1]) {
+      return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+    }
+  }
+  return "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80";
+};
 
 export default function Portfolio() {
   const [projectsList, setProjectsList] = useState([]);
@@ -97,10 +110,17 @@ export default function Portfolio() {
                   {/* Image Frame with Overlays */}
                   <div className="relative aspect-[3/2] overflow-hidden bg-stone-950 shadow-lg">
                     <img
-                      src={project.image}
+                      src={getProjectImage(project)}
                       alt={project.title}
                       className="object-cover w-full h-full transform group-hover:scale-105 transition-luxury duration-700 brightness-[0.95]"
                     />
+                    
+                    {/* Video Play Indicator Badge */}
+                    {project.videoUrl && (
+                      <div className="absolute top-4 right-4 bg-stone-950/85 backdrop-blur-md text-studio-accent p-2.5 rounded-full border border-studio-accent/20 z-10 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                        <Play size={12} className="fill-studio-accent" />
+                      </div>
+                    )}
                     {/* Subtle Elegant Hover Overlay */}
                     <div className="absolute inset-0 bg-stone-950/80 backdrop-blur-[2px] flex flex-col justify-between p-8 opacity-0 group-hover:opacity-100 transition-luxury duration-500">
                       <span className="text-[10px] tracking-[0.25em] uppercase text-studio-accent font-medium">
