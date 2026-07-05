@@ -220,7 +220,6 @@ export default function AdminDashboard() {
         const projectPayload = {
           ...formData,
           gallery: parsedGallery,
-          image: parsedGallery[0] || "",
         };
 
         if (showModal === "add") {
@@ -1205,7 +1204,19 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <label className="block text-[10px] tracking-wider uppercase text-stone-500 mb-2">
-                      Gallery Images (comma separated list of URLs. First URL will be automatically used as the Cover Image)
+                      Cover Image or Video URL (Image URL, YouTube, or Instagram link)
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.image || ""}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      placeholder="e.g. https://images.unsplash.com/photo-... or https://www.youtube.com/watch?v=..."
+                      className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] tracking-wider uppercase text-stone-500 mb-2">
+                      Gallery Images (comma separated list of URLs)
                     </label>
                     <textarea
                       value={formData.gallery || ""}
@@ -1214,18 +1225,6 @@ export default function AdminDashboard() {
                       placeholder="https://image1.com, https://image2.com"
                       className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent font-mono text-xs"
                     ></textarea>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] tracking-wider uppercase text-stone-500 mb-2">
-                      Video URL (YouTube, Instagram, or direct video link)
-                    </label>
-                    <input
-                      type="url"
-                      value={formData.videoUrl || ""}
-                      onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
-                      placeholder="e.g. https://www.youtube.com/watch?v=... or https://www.instagram.com/reel/..."
-                      className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent font-mono text-xs"
-                    />
                   </div>
                 </>
               )}

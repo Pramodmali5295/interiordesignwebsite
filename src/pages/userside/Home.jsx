@@ -5,14 +5,40 @@ import { ArrowRight, Compass, Home as HomeIcon, Briefcase, LayoutGrid, Hammer, L
 import { fetchProjects } from "../../services/portfolioService";
 import { fetchServices } from "../../services/serviceService";
 
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  const cleaned = url.trim();
+  return (
+    cleaned.includes("youtube.com") ||
+    cleaned.includes("youtu.be") ||
+    cleaned.includes("instagram.com") ||
+    /\.(mp4|webm|ogg)$/i.test(cleaned)
+  );
+};
+
 // Helper to determine cover image with fallback for video projects
 const getProjectImage = (project) => {
-  if (project.image) return project.image;
+  // If project.image is a direct image URL
+  if (project.image && !isVideoUrl(project.image)) {
+    return project.image;
+  }
+  // If project.image is a video URL
+  if (project.image && isVideoUrl(project.image)) {
+    const ytMatch = project.image.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+    if (ytMatch && ytMatch[1]) {
+      return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+    }
+  }
+  // Backward compatibility check
   if (project.videoUrl) {
     const ytMatch = project.videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
     if (ytMatch && ytMatch[1]) {
       return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
     }
+  }
+  // Fallback to first gallery image
+  if (project.gallery && project.gallery.length > 0) {
+    return project.gallery[0];
   }
   return "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80";
 };
@@ -368,7 +394,7 @@ export default function Home() {
                     />
                     
                     {/* Video Play Indicator Badge */}
-                    {project.videoUrl && (
+                    {(project.videoUrl || isVideoUrl(project.image)) && (
                       <div className="absolute top-4 right-4 bg-stone-950/85 backdrop-blur-md text-studio-accent p-2.5 rounded-full border border-studio-accent/20 z-10 shadow-lg group-hover:scale-110 transition-transform duration-500">
                         <Play size={12} className="fill-studio-accent" />
                       </div>

@@ -4,14 +4,40 @@ import { ArrowLeft, ArrowRight, Calendar, MapPin, Tag, User, Play } from "lucide
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  const cleaned = url.trim();
+  return (
+    cleaned.includes("youtube.com") ||
+    cleaned.includes("youtu.be") ||
+    cleaned.includes("instagram.com") ||
+    /\.(mp4|webm|ogg)$/i.test(cleaned)
+  );
+};
+
 // Helper to determine cover image with fallback for video projects
 const getProjectImage = (project) => {
-  if (project.image) return project.image;
+  // If project.image is a direct image URL
+  if (project.image && !isVideoUrl(project.image)) {
+    return project.image;
+  }
+  // If project.image is a video URL
+  if (project.image && isVideoUrl(project.image)) {
+    const ytMatch = project.image.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+    if (ytMatch && ytMatch[1]) {
+      return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+    }
+  }
+  // Backward compatibility check
   if (project.videoUrl) {
     const ytMatch = project.videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
     if (ytMatch && ytMatch[1]) {
       return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
     }
+  }
+  // Fallback to first gallery image
+  if (project.gallery && project.gallery.length > 0) {
+    return project.gallery[0];
   }
   return "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80";
 };
@@ -166,7 +192,8 @@ export default function PortfolioSingle() {
 
       {/* Premium Video Walkthrough Section */}
       {(() => {
-        const videoData = getVideoEmbed(project.videoUrl);
+        const targetVideoUrl = isVideoUrl(project.image) ? project.image : project.videoUrl;
+        const videoData = getVideoEmbed(targetVideoUrl);
         if (!videoData) return null;
         return (
           <section className="bg-stone-950 pt-16 pb-8">
