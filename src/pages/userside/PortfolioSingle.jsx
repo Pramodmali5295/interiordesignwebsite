@@ -9,6 +9,42 @@ import { fetchProjectBySlug, fetchProjects } from "../../services/portfolioServi
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+// Helper to parse YouTube, Instagram or direct video URLs
+function getVideoEmbed(url) {
+  if (!url) return null;
+
+  const trimmedUrl = url.trim();
+
+  // YouTube
+  const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i;
+  const ytMatch = trimmedUrl.match(ytRegex);
+  if (ytMatch && ytMatch[1]) {
+    return {
+      type: "youtube",
+      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}`
+    };
+  }
+
+  // Instagram
+  const igRegex = /instagram\.com\/(?:p|reel|tv)\/([a-zA-Z0-9_-]+)/i;
+  const igMatch = trimmedUrl.match(igRegex);
+  if (igMatch && igMatch[1]) {
+    return {
+      type: "instagram",
+      embedUrl: `https://www.instagram.com/p/${igMatch[1]}/embed`
+    };
+  }
+
+  // Direct video URL
+  if (trimmedUrl.match(/\.(mp4|webm|ogg)$/i) || trimmedUrl.includes("storage.googleapis.com") || trimmedUrl.includes("firebasestorage.googleapis.com")) {
+    return {
+      type: "direct",
+      embedUrl: trimmedUrl
+    };
+  }
+
+  return null;
+}
 
 export default function PortfolioSingle() {
   const { slug } = useParams();
@@ -115,6 +151,57 @@ export default function PortfolioSingle() {
           <div className="w-16 h-[1px] bg-studio-accent mt-6"></div>
         </div>
       </section>
+
+      {/* Premium Video Walkthrough Section */}
+      {(() => {
+        const videoData = getVideoEmbed(project.videoUrl);
+        if (!videoData) return null;
+        return (
+          <section className="bg-stone-950 pt-16 pb-8">
+            <div className="max-w-5xl mx-auto px-6 md:px-12">
+              <div className="text-center mb-8">
+                <span className="text-[10px] uppercase tracking-[0.3em] text-studio-accent block mb-2">Walkthrough</span>
+                <h2 className="text-2xl md:text-3xl font-serif text-white font-light uppercase tracking-wider">
+                  Project Video Showcase
+                </h2>
+                <div className="w-12 h-[1px] bg-studio-accent/50 mx-auto mt-4"></div>
+              </div>
+              
+              <div className={`relative w-full shadow-2xl bg-stone-900 border border-stone-800 overflow-hidden ${
+                videoData.type === "instagram" ? "max-w-md mx-auto aspect-[9/16]" : "aspect-video"
+              }`}>
+                {videoData.type === "youtube" && (
+                  <iframe
+                    src={videoData.embedUrl}
+                    title="YouTube video player"
+                    className="absolute inset-0 w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                )}
+                {videoData.type === "instagram" && (
+                  <iframe
+                    src={videoData.embedUrl}
+                    title="Instagram post embed"
+                    className="absolute inset-0 w-full h-full border-0"
+                    allowTransparency="true"
+                    allow="encrypted-media"
+                    scrolling="no"
+                    frameBorder="0"
+                  ></iframe>
+                )}
+                {videoData.type === "direct" && (
+                  <video
+                    src={videoData.embedUrl}
+                    controls
+                    className="absolute inset-0 w-full h-full object-cover"
+                  ></video>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Swiper Gallery Carousel */}
       {project.gallery && project.gallery.length > 0 && (

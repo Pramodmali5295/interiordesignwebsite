@@ -126,6 +126,7 @@ export default function AdminDashboard() {
           description: item.description,
           image: item.image,
           gallery: item.gallery ? item.gallery.join(", ") : "",
+          videoUrl: item.videoUrl || "",
         });
       } else if (activeTab === "services") {
         setFormData({
@@ -171,6 +172,7 @@ export default function AdminDashboard() {
           description: "",
           image: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&h=800&q=85",
           gallery: "",
+          videoUrl: "",
         });
       } else if (activeTab === "services") {
         setFormData({
@@ -1228,6 +1230,18 @@ export default function AdminDashboard() {
                       placeholder="https://image1.com, https://image2.com"
                       className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent font-mono text-xs"
                     ></textarea>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] tracking-wider uppercase text-stone-500 mb-2">
+                      Video URL (YouTube, Instagram, or direct video link)
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.videoUrl || ""}
+                      onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+                      placeholder="e.g. https://www.youtube.com/watch?v=... or https://www.instagram.com/reel/..."
+                      className="w-full bg-stone-50 border border-stone-200 px-4 py-2 focus:outline-none focus:border-studio-accent font-mono text-xs"
+                    />
                   </div>
                 </>
               )}
